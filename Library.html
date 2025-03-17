@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Libros Gratuitos</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+        body { 
+            font-family: 'Orbitron', sans-serif; 
+            text-align: center; 
+            background: #121212; 
+            color: white; 
+        }
+        h1 { 
+            margin: 20px 0; 
+            color: #ffcc00; 
+            font-size: 2.5em;
+            text-transform: uppercase;
+            animation: glow 1.5s infinite alternate;
+        }
+        @keyframes glow {
+            0% { text-shadow: 0 0 5px #ffcc00, 0 0 10px #ffcc00; }
+            100% { text-shadow: 0 0 15px #ffcc00, 0 0 20px #ffcc00; }
+        }
+        input { padding: 10px; width: 300px; border-radius: 5px; border: none; }
+        button { 
+            padding: 10px; 
+            cursor: pointer; 
+            background: #ffcc00; 
+            border: none; 
+            color: #121212; 
+            font-weight: bold;
+            border-radius: 5px;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: scale(1.1);
+        }
+        .libros-container { 
+            display: flex; 
+            flex-wrap: wrap; 
+            justify-content: center; 
+            margin-top: 20px; 
+        }
+        .libro { 
+            background: #222; 
+            padding: 15px; 
+            margin: 10px; 
+            border-radius: 10px; 
+            width: 250px; 
+            text-align: left;
+            box-shadow: 0 0 10px rgba(255, 255, 0, 0.5);
+            transition: transform 0.3s;
+        }
+        .libro:hover {
+            transform: scale(1.05);
+        }
+        .libro img { width: 100%; border-radius: 5px; }
+        .libro a { color: #ffcc00; text-decoration: none; font-weight: bold; }
+        .footer { margin-top: 30px; padding: 10px; color: #888; }
+    </style>
+</head>
+<body>
+    <h1>Buscar Libros Gratuitos</h1>
+    <input type="text" id="busqueda" placeholder="Escribe un tema...">
+    <button onclick="buscarLibros()">Buscar</button>
+    
+    <div class="libros-container" id="libros"></div>
+    
+    <div class="footer">&copy; 2025 - Todos los derechos reservados</div>
+    
+    <script>
+        function buscarLibros() {
+            const query = document.getElementById('busqueda').value;
+            fetch(`https://openlibrary.org/search.json?q=${query}&limit=10`)
+                .then(response => response.json())
+                .then(data => {
+                    const contenedor = document.getElementById('libros');
+                    contenedor.innerHTML = '';
+                    data.docs.forEach(libro => {
+                        const portada = libro.cover_i 
+                            ? `https://covers.openlibrary.org/b/id/${libro.cover_i}-M.jpg`
+                            : 'https://via.placeholder.com/150';
+                        const enlace = libro.key 
+                            ? `https://openlibrary.org${libro.key}` 
+                            : '#';
+                        contenedor.innerHTML += `
+                            <div class="libro">
+                                <img src="${portada}" alt="Portada del libro">
+                                <h3>${libro.title}</h3>
+                                <p>${libro.author_name ? libro.author_name.join(', ') : 'Autor desconocido'}</p>
+                                <a href="${enlace}" target="_blank">Leer ahora</a>
+                            </div>
+                        `;
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>
